@@ -162,7 +162,7 @@ argsdict['code_file'] = sys.argv[0]
 # Use the model, optimizer, and the flags passed to the script to make the
 # name for the experimental dir
 print("\n########## Setting Up Experiment ######################")
-flags = [flag.lstrip('--') for flag in sys.argv[1:]]
+flags = [flag.lstrip('--') for flag in sys.argv[1:-1]]
 experiment_path = os.path.join(args.save_dir + '_'.join([argsdict['model'],
                                                          argsdict['optimizer']]
                                                         + flags))
