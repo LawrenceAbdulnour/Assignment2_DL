@@ -490,26 +490,26 @@ for epoch in range(1):
         # want to look at test performance you would load the saved
         # model and run on the test data with batch_size=1
 
-        # LOC RESULTS
-        val_ppls.append(val_ppl)
-        val_grads.extend(val_grad)
-        val_losses.extend(val_loss)
-        times.append(time.time() - t0)
-        log_str = 'epoch: ' + str(epoch) + '\t' \
-                + 'train ppl: ' + str(train_ppl) + '\t' \
-                + 'val ppl: ' + str(val_ppl)  + '\t' \
-                + 'best val: ' + str(best_val_so_far) + '\t' \
-                + 'time (s) spent in epoch: ' + str(times[-1])
-        print(log_str)
-        with open (os.path.join(args.save_dir, 'log.txt'), 'a') as f_:
-            f_.write(log_str+ '\n')
+    # LOC RESULTS
+    val_ppls.append(val_ppl)
+    val_grads.extend(val_grad)
+    val_losses.extend(val_loss)
+    times.append(time.time() - t0)
+    log_str = 'epoch: ' + str(epoch) + '\t' \
+            + 'train ppl: ' + str(train_ppl) + '\t' \
+            + 'val ppl: ' + str(val_ppl)  + '\t' \
+            + 'best val: ' + str(best_val_so_far) + '\t' \
+            + 'time (s) spent in epoch: ' + str(times[-1])
+    print(log_str)
+    with open (os.path.join(args.save_dir, 'log.txt'), 'a') as f_:
+        f_.write(log_str+ '\n')
 
-    # SAVE LEARNING CURVES
-    lc_path = os.path.join(args.save_dir, 'grad_values.npy')
-    print('\nDONE\n\nSaving gradient values to '+ lc_path)
-    np.save(lc_path, {'val_ppls':val_ppls,
-                      'val_losses':val_losses,
-                      'val_grads':val_grads})
+# SAVE LEARNING CURVES
+lc_path = os.path.join(args.save_dir, 'grad_values.npy')
+print('\nDONE\n\nSaving gradient values to '+ lc_path)
+np.save(lc_path, {'val_ppls':val_ppls,
+                  'val_losses':val_losses,
+                  'val_grads':val_grads})
 
 # NOTE ==============================================
 # To load these, run
