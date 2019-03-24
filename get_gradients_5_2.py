@@ -89,7 +89,7 @@ import torch.nn
 from torch.autograd import Variable
 import torch.nn as nn
 import numpy as np
-import ipdb
+import pdb
 
 # NOTE ==============================================
 # This is where your models are imported
@@ -404,7 +404,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         loss = loss_fn(outputs.contiguous().view(-1, model.vocab_size), tt)
 
         grad_params = torch.autograd.grad(loss, hidden, retain_graph=True)
-        ipdb.set_trace()
+        pdb.set_trace()
         grad_norm = 0
         for idx in range(len(grad_params)):
             grad_norm += torch.norm(grad_params[idx])
