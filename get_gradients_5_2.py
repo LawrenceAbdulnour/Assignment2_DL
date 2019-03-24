@@ -403,7 +403,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         # at each time-step separately.
         loss = loss_fn(outputs.contiguous().view(-1, model.vocab_size), tt)
 
-        grad_params = torch.autograd.grad(loss, hidden, retain_graph=True, allow_unused=True)
+        grad_params = torch.autograd.grad(loss, hidden, create_graph=True, retain_graph=True, allow_unused=True)
         pdb.set_trace()
         grad_norm = 0
         for idx in range(len(grad_params)):
