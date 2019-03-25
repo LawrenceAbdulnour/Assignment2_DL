@@ -374,7 +374,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
     epoch_size = ((len(data) // model.batch_size) - 1) // model.seq_len
     start_time = time.time()
     if args.model != 'TRANSFORMER':
-        hidden = model.init_hidden()
+        hidden = model.init_hidden(requires_grad=True)
         hidden = hidden.to(device)
     costs = 0.0
     iters = 0
@@ -388,7 +388,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
             outputs = model.forward(batch.data, batch.mask).transpose(1, 0)
             # print ("outputs.shape", outputs.shape)
         else:
-            inputs = torch.from_numpy(x.astype(np.int64), requires_grad=True).transpose(0, 1).contiguous().to(device)  # .cuda()
+            inputs = torch.from_numpy(x.astype(np.int64)).transpose(0, 1).contiguous().to(device)  # .cuda()
             model.zero_grad()
             hidden = repackage_hidden(hidden)
             outputs, hidden = model(inputs, hidden)

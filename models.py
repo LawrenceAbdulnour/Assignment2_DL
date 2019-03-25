@@ -105,14 +105,17 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     nn.init.uniform_(self.wy.weight, -0.1,  0.1)
     nn.init.zeros_(self.wy.bias)
 
-  def init_hidden(self):
+  def init_hidden(self, requires_grad=True):
     # TODO ========================
     # initialize the hidden states to zero
     """
     This is used for the first mini-batch in an epoch, only.
     """
 
-    hidden = torch.zeros([self.num_layers, self.batch_size, self.hidden_size])
+    if requires_grad:
+        hidden = torch.zeros([self.num_layers, self.batch_size, self.hidden_size], requires_grad=True)
+    else:
+        hidden = torch.zeros([self.num_layers, self.batch_size, self.hidden_size])
     return hidden  # a parameter tensor of shape (self.num_layers, self.batch_size, self.hidden_size)
 
   def forward(self, inputs, hidden):
@@ -161,11 +164,11 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
       for layer in range(self.num_layers):
         temp = self.wh[layer](hidden[layer])
         if layer == 0:
-          temp2 = temp.add(self.wx[layer](self.dropout(embed[t])))  
+          temp2 = temp.add(self.wx[layer](self.dropout(embed[t])))
         else:
           temp2 = temp.add(self.wx[layer](last_hidden_below))
 
-        tan_h = torch.nn.Tanh()  
+        tan_h = torch.nn.Tanh()
         temp2 = tan_h(temp2)
         l_hidden.append(temp2.clone())
         temp2 = self.dropout(temp2)
