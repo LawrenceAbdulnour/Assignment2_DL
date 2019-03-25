@@ -404,14 +404,12 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         # For problem 5.1, you will (instead) need to compute the average loss
         # at each time-step separately.
 
-        for t in range(0, model.seq_len):
-            loss[t] += loss_fn(outputs[t], targets[t]).data.item()
-            print(t, loss[t])
-        iters += 1
+        #for t in range(0, model.seq_len):
+        #    loss[t] += loss_fn(outputs[t], targets[t]).data.item()
+        #    print(t, loss[t])
+        #iters += 1
 
-        pdb.set_trace()
-
-        loss_T = loss_fn(outputs[model.seq_len], targets[model.seq_len])
+        loss_T = loss_fn(outputs[model.seq_len-1], targets[model.seq_len-1])
 
         for t in range(model.seq_len):
              hidden_timesteps[t].retain_grad()
