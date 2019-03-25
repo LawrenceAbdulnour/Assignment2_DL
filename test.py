@@ -415,33 +415,17 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         #print('sum of gradient norm is: %f' % (grad_norm))
 
         loss.backward()
-        grads = []
+        grads_norm = []
+        grads_mean = []
         for t in range(model.seq_len):
              norm = torch.norm(hidden_timesteps[t].grad)
-             grads.append(norm)
+             mean = torch.mean(hidden_timesteps[t].grad)
+             grads_norm.append(norm)
+             grads_mean.append(mean)
 
-        pdb.set_trace()
+        break
 
-
-        costs += loss.data.item() * model.seq_len
-        losses.append(costs)
-        iters += model.seq_len
-        if args.debug:
-            print(step, loss)
-        if is_train:  # Only update parameters if training
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 0.25)
-            if args.optimizer == 'ADAM':
-                optimizer.step()
-            else:
-                for p in model.parameters():
-                    if p.grad is not None:
-                        p.data.add_(-lr, p.grad.data)
-            if step % (epoch_size // 10) == 10:
-                print('step: ' + str(step) + '\t' \
-                      + 'loss: ' + str(costs) + '\t' \
-                      + 'speed (wps):' + str(iters * model.batch_size / (time.time() - start_time)))
-    return np.exp(costs / iters), losses, grads
+    return grads_norm, grads_mean
 
 
 ###############################################################################
@@ -451,19 +435,10 @@ def run_epoch(model, data, is_train=False, lr=1.0):
 ###############################################################################
 
 print("\n########## Running Main Loop ##########################")
-train_ppls = []
-train_losses = []
-val_ppls = []
-val_losses = []
-val_grads = []
-best_val_so_far = np.inf
+grads_norm = []
+grads_mean = []
 times = []
 
-# In debug mode, only run one epoch
-if args.debug:
-    num_epochs = 1
-else:
-    num_epochs = args.num_epochs
 
 # MAIN LOOP
 
@@ -479,12 +454,10 @@ for epoch in range(1):
         lr_decay = lr_decay_base ** max(epoch - m_flat_lr, 0)
         lr = lr * lr_decay  # decay lr if it is time
 
-    # RUN MODEL ON TRAINING DATA
-    # train_ppl, train_loss = run_epoch(model, train_data, True, lr)
 
-    # RUN MODEL ON VALIDATION DATA
-    val_ppl, val_loss, val_grad = run_epoch(model, valid_data)
-    print(val_ppl, val_loss, val_grad)
+    # RUN MODEL ON VALIDATION DATA FOR ONE MINIBATCH
+    grads_norm, grads_mean = run_epoch(model, valid_data)
+    print(grads_norm, grads_mean)
 
 
     # SAVE MODEL IF IT'S THE BEST SO FAR
@@ -503,14 +476,8 @@ for epoch in range(1):
         # model and run on the test data with batch_size=1
 
     # LOC RESULTS
-    val_ppls.append(val_ppl)
-    val_grads.extend(val_grad)
-    val_losses.extend(val_loss)
     times.append(time.time() - t0)
     log_str = 'epoch: ' + str(epoch) + '\t' \
-            + 'train ppl: ' + str(train_ppl) + '\t' \
-            + 'val ppl: ' + str(val_ppl)  + '\t' \
-            + 'best val: ' + str(best_val_so_far) + '\t' \
             + 'time (s) spent in epoch: ' + str(times[-1])
     print(log_str)
     with open (os.path.join(args.save_dir, 'log.txt'), 'a') as f_:
@@ -519,9 +486,8 @@ for epoch in range(1):
 # SAVE LEARNING CURVES
 lc_path = os.path.join(args.save_dir, 'grad_values.npy')
 print('\nDONE\n\nSaving gradient values to '+ lc_path)
-np.save(lc_path, {'val_ppls':val_ppls,
-                  'val_losses':val_losses,
-                  'val_grads':val_grads})
+np.save(lc_path, {'grads_norm':grads_norm,
+                  'grads_mean':grads_mean,})
 
 # NOTE ==============================================
 # To load these, run
