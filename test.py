@@ -402,7 +402,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         # For problem 5.1, you will (instead) need to compute the average loss
         # at each time-step separately.
         loss = loss_fn(outputs.contiguous().view(-1, model.vocab_size), tt)
-        
+
         for t in range(model.seq_len):
              hidden_timesteps[t].retain_grad()
 
@@ -417,7 +417,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         loss.backward()
         grads = []
         for t in range(model.seq_len):
-             grads.append(hidden_timesteps[t].grad())
+             grads.append(hidden_timesteps[t].grad)
 
         pdb.set_trace()
 
