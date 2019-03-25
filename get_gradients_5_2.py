@@ -390,7 +390,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         else:
             inputs = torch.from_numpy(x.astype(np.int64)).transpose(0, 1).contiguous().to(device)  # .cuda()
             model.zero_grad()
-            hidden = repackage_hidden(hidden)
+            #hidden = repackage_hidden(hidden)
             outputs, hidden = model(inputs, hidden)
 
         targets = torch.from_numpy(y.astype(np.int64)).transpose(0, 1).contiguous().to(device)  # .cuda()
