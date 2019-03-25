@@ -392,7 +392,6 @@ def run_epoch(model, data, is_train=False, lr=1.0):
             model.zero_grad()
             hidden = repackage_hidden(hidden)
             outputs, hidden, hidden_timesteps = model(inputs, hidden)
-            hidden_timesteps = torch.cat(hidden_timesteps)
 
         targets = torch.from_numpy(y.astype(np.int64)).transpose(0, 1).contiguous().to(device)  # .cuda()
         tt = torch.squeeze(targets.view(-1, model.batch_size * model.seq_len))
@@ -441,7 +440,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
                 print('step: ' + str(step) + '\t' \
                       + 'loss: ' + str(costs) + '\t' \
                       + 'speed (wps):' + str(iters * model.batch_size / (time.time() - start_time)))
-    return np.exp(costs / iters), losses, grad_norm
+    return np.exp(costs / iters), losses, grads
 
 
 ###############################################################################
