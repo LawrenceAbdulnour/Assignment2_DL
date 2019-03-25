@@ -380,6 +380,8 @@ def run_epoch(model, data, is_train=False, lr=1.0):
     iters = 0
     losses = []
 
+    loss = np.zeros(model.seq_len)
+
     # LOOP THROUGH MINIBATCHES
     for step, (x, y) in enumerate(ptb_iterator(data, model.batch_size, model.seq_len)):
         if args.model == 'TRANSFORMER':
@@ -408,8 +410,8 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         iters += 1
 
         pdb.set_trace()
-        
-        loss_35 = loss_fn(outputs[35], targets[35])
+
+        loss_T = loss_fn(outputs[model.seq_len], targets[model.seq_len])
 
         for t in range(model.seq_len):
              hidden_timesteps[t].retain_grad()
@@ -422,7 +424,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         #print('loss: %f' % (loss))
         #print('sum of gradient norm is: %f' % (grad_norm))
 
-        loss_35.backward()
+        loss_T.backward()
         grads_norm = []
         grads_mean = []
         for t in range(model.seq_len):
