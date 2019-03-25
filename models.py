@@ -8,6 +8,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.distributions.categorical import Categorical
 
+import pdb
+
 
 # import matplotlib.pyplot as plt
 
@@ -172,6 +174,7 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
         temp2 = self.dropout(temp2)
         last_hidden_below = temp2.clone()
         hidden_timesteps.append(temp2)
+        pdb.set_trace()
       hidden = torch.stack(l_hidden)
       l_logits.append(self.wy(last_hidden_below.clone()))
     logits= torch.stack(l_logits)
@@ -316,7 +319,7 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
 
     l_logits = []
     embed = self.embedding(inputs)
-
+    hidden_timesteps = []
     for t in range(self.seq_len):
 
         l_hidden = []
@@ -335,7 +338,7 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
         hidden = torch.stack(l_hidden)
         l_logits.append(self.wy(last_hidden_below))
     logits = torch.stack(l_logits)
-    return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden
+    return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden, hidden_timesteps
 
   def generate(self, input, hidden, generated_seq_len):
     # TODO ========================
