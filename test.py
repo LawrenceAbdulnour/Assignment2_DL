@@ -417,7 +417,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         loss.backward()
         grads = []
         for t in range(model.seq_len):
-             norm = torch.norm(hidden_timesteps[1].grad)
+             norm = torch.norm(hidden_timesteps[t].grad)
              grads.append(norm)
 
         pdb.set_trace()
