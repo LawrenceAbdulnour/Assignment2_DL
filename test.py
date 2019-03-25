@@ -394,14 +394,22 @@ def run_epoch(model, data, is_train=False, lr=1.0):
             outputs, hidden, hidden_timesteps = model(inputs, hidden)
 
         targets = torch.from_numpy(y.astype(np.int64)).transpose(0, 1).contiguous().to(device)  # .cuda()
-        tt = torch.squeeze(targets.view(-1, model.batch_size * model.seq_len))
+        #tt = torch.squeeze(targets.view(-1, model.batch_size * model.seq_len))
 
         # LOSS COMPUTATION
         # This line currently averages across all the sequences in a mini-batch
         # and all time-steps of the sequences.
         # For problem 5.1, you will (instead) need to compute the average loss
         # at each time-step separately.
-        loss = loss_fn(outputs.contiguous().view(-1, model.vocab_size), tt)
+
+        for t in range(0, model.seq_len):
+            loss[t] += loss_fn(outputs[t], targets[t]).data.item()
+            print(t, loss[t])
+        iters += 1
+
+        pdb.set_trace()
+        
+        loss_35 = loss_fn(outputs[35], targets[35])
 
         for t in range(model.seq_len):
              hidden_timesteps[t].retain_grad()
@@ -414,7 +422,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         #print('loss: %f' % (loss))
         #print('sum of gradient norm is: %f' % (grad_norm))
 
-        loss.backward()
+        loss_35.backward()
         grads_norm = []
         grads_mean = []
         for t in range(model.seq_len):
