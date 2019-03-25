@@ -388,7 +388,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
             outputs = model.forward(batch.data, batch.mask).transpose(1, 0)
             # print ("outputs.shape", outputs.shape)
         else:
-            inputs = torch.from_numpy(x.astype(np.int64)).transpose(0, 1).contiguous().to(device)  # .cuda()
+            inputs = torch.from_numpy(x.astype(np.int64), requires_grad=True).transpose(0, 1).contiguous().to(device)  # .cuda()
             model.zero_grad()
             hidden = repackage_hidden(hidden)
             outputs, hidden = model(inputs, hidden)
@@ -403,7 +403,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         # at each time-step separately.
         loss = loss_fn(outputs.contiguous().view(-1, model.vocab_size), tt)
 
-        grad_params = torch.autograd.grad(Variable(loss, requires_grad=True), hidden, create_graph=True, retain_graph=True, allow_unused=True)
+        grad_params = torch.autograd.grad(loss, hidden, create_graph=True, retain_graph=True, allow_unused=True)
         pdb.set_trace()
         grad_norm = 0
         for idx in range(len(grad_params)):
