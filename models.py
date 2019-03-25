@@ -154,7 +154,6 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     l_logits = []
 
     embed = self.embedding(inputs)
-    h=[]
     hidden_timesteps = []
 
     for t in range(self.seq_len):
@@ -169,12 +168,11 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
 
         tan_h = torch.nn.Tanh()
         temp2 = tan_h(temp2)
-        h.append(temp2)
         l_hidden.append(temp2.clone())
         temp2 = self.dropout(temp2)
         last_hidden_below = temp2.clone()
+        hidden_timesteps.append(temp2)
       hidden = torch.stack(l_hidden)
-      hidden_timesteps.append(h)
       l_logits.append(self.wy(last_hidden_below.clone()))
     logits= torch.stack(l_logits)
     return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden, hidden_timesteps
