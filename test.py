@@ -408,8 +408,8 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         #    loss[t] += loss_fn(outputs[t], targets[t]).data.item()
         #    print(t, loss[t])
         #iters += 1
-
-        loss_T = loss_fn(outputs[model.seq_len], targets[model.seq_len])
+        pdb.set_trace()
+        loss_T = loss_fn(outputs[model.seq_len-1], targets[model.seq_len-1])
 
         for t in range(model.seq_len):
             for l in range(model.num_layers):
