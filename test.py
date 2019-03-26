@@ -428,6 +428,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
              norm = torch.norm(means)
              grads_norm.append(norm)
              #last = torch.norm(hidden_timesteps[model.seq_len-1][0].grad)
+             #pdb.set_trace()
              #grads_norm.append(last)
 
         break
