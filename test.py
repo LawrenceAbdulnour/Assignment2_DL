@@ -413,23 +413,22 @@ def run_epoch(model, data, is_train=False, lr=1.0):
 
         for t in range(model.seq_len):
             for l in range(model.num_layers):
-             hidden_timesteps[t][l].retain_grad()
-
-        pdb.set_trace()
+                hidden_timesteps[t][l].retain_grad()
 
         loss_T.backward()
         grads_norm = []
         grads_mean = []
-        for t in range(model.seq_len):
 
-             norm = torch.norm(hidden_timesteps[t].grad)
-             mean = torch.mean(hidden_timesteps[t].grad)
+        means = torch.zeros([model.batch_size, model.emb_size])
+        for t in range(model.seq_len):
+             for l in range(model.num_layers):
+                 means = torch.add(means,hidden_timesteps[t][l].grad)
+             norm = torch.norm(means)
              grads_norm.append(norm)
-             grads_mean.append(mean)
 
         break
 
-    return grads_norm, grads_mean
+    return grads_norm
 
 
 ###############################################################################
@@ -440,7 +439,6 @@ def run_epoch(model, data, is_train=False, lr=1.0):
 
 print("\n########## Running Main Loop ##########################")
 grads_norm = []
-grads_mean = []
 times = []
 
 
@@ -460,8 +458,8 @@ for epoch in range(1):
 
 
     # RUN MODEL ON VALIDATION DATA FOR ONE MINIBATCH
-    grads_norm, grads_mean = run_epoch(model, valid_data)
-    print(grads_norm, grads_mean)
+    grads_norm = run_epoch(model, valid_data)
+    print(grads_norm)
 
 
     # SAVE MODEL IF IT'S THE BEST SO FAR
@@ -490,8 +488,7 @@ for epoch in range(1):
 # SAVE LEARNING CURVES
 lc_path = os.path.join(args.save_dir, 'grad_values.npy')
 print('\nDONE\n\nSaving gradient values to '+ lc_path)
-np.save(lc_path, {'grads_norm':grads_norm,
-                  'grads_mean':grads_mean,})
+np.save(lc_path, {'grads_norm':grads_norm})
 
 # NOTE ==============================================
 # To load these, run
