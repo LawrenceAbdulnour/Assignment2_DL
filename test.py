@@ -418,7 +418,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         loss_T.backward()
         grads_norm = []
 
-        means = torch.zeros([model.batch_size, model.hidden_size])
+        means = torch.zeros([model.batch_size, model.hidden_size]).to('cuda')
 
         for t in range(model.seq_len):
              for l in range(model.num_layers):
