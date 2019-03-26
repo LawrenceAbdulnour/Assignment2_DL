@@ -419,10 +419,13 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         grads_norm = []
 
         means = torch.zeros([model.batch_size, model.hidden_size]).to('cuda')
-        pdb.set_trace()
+
         for t in range(model.seq_len):
              for l in range(model.num_layers):
+                 print(l)
+                 print(hidden_timesteps[t][l].grad)
                  means = torch.add(means,hidden_timesteps[t][l].grad)
+
              means = means / (model.num_layers)
              norm = torch.norm(means)
              grads_norm.append(norm)
