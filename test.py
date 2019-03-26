@@ -421,7 +421,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         means = torch.zeros([model.batch_size, model.hidden_size]).to('cuda')
 
         for t in range(model.seq_len):
-                 print(t)
+             print(t)
              for l in range(model.num_layers):
                  print(l)
                  means = torch.add(means,hidden_timesteps[t][l].grad)
