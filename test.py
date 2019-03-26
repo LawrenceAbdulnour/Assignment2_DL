@@ -423,8 +423,8 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         for t in range(model.seq_len):
              for l in range(model.num_layers):
                  print(l)
-                 print(hidden_timesteps[t][l].grad)
                  means = torch.add(means,hidden_timesteps[t][l].grad)
+                 print(means)
 
              means = means / (model.num_layers)
              norm = torch.norm(means)
