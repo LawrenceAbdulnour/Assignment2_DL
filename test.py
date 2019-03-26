@@ -409,7 +409,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         #    print(t, loss[t])
         #iters += 1
 
-        loss_T = loss_fn(outputs[model.seq_len-1], targets[model.seq_len-1])
+        loss_T = loss_fn(outputs[model.seq_len], targets[model.seq_len])
 
         for t in range(model.seq_len):
             for l in range(model.num_layers):
@@ -420,7 +420,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
 
         means = torch.zeros([model.batch_size, model.hidden_size]).to('cuda')
 
-        for t in range(model.seq_len-1):
+        for t in range(model.seq_len):
              for l in range(model.num_layers):
                  means = torch.add(means,hidden_timesteps[t][l].grad)
 
