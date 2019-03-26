@@ -419,7 +419,7 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         grads_norm = []
 
         means = torch.zeros([model.batch_size, model.hidden_size])
-        pdb.set_trace()
+
         for t in range(model.seq_len):
              for l in range(model.num_layers):
                  means = torch.add(means,hidden_timesteps[t][l].grad)
