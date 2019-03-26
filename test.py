@@ -410,22 +410,18 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         #iters += 1
 
         loss_T = loss_fn(outputs[model.seq_len-1], targets[model.seq_len-1])
-        pdb.set_trace()
-        for t in range(model.seq_len):
-             hidden_timesteps[t].retain_grad()
 
-        #grad_params = torch.autograd.grad(loss, hidden_timesteps, retain_graph=True)
-        #pdb.set_trace()
-        #grad_norm = 0
-        #for idx in range(len(grad_params)):
-        #    grad_norm += torch.norm(grad_params[idx])
-        #print('loss: %f' % (loss))
-        #print('sum of gradient norm is: %f' % (grad_norm))
+        for t in range(model.seq_len):
+            for l in range(model.num_layers):
+             hidden_timesteps[t][l].retain_grad()
+
+        pdb.set_trace()
 
         loss_T.backward()
         grads_norm = []
         grads_mean = []
         for t in range(model.seq_len):
+
              norm = torch.norm(hidden_timesteps[t].grad)
              mean = torch.mean(hidden_timesteps[t].grad)
              grads_norm.append(norm)
